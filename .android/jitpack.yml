@@ -2,7 +2,11 @@
 jdk:
   - openjdk17
 before_install:
-  - ./scripts/prepareJitpackEnvironment.sh
+  - wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.19.0-stable.tar.xz
+  - tar xf flutter_linux_3.19.0-stable.tar.xz
+  - export PATH="$PATH:$(pwd)/flutter/bin"
 install:
-  - FILE="-Dfile=flutter-release.aar"
-  - mvn install:install-file $FILE -DgroupId=com.github.sak-coder -DartifactId=mps_module -Dversion=1.0.0 -Dpackaging=aar -DgeneratePom=true
+  - flutter build aar
+  - mkdir -p library
+  - cp build/host/outputs/repo/*/flutter_*/debug/*.aar library/
+  - cp build/host/outputs/repo/*/flutter_*/release/*.aar library/
