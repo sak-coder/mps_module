@@ -1,12 +1,20 @@
-# configuration file for building snapshots and releases with jitpack.io
 jdk:
-  - openjdk17
+  - openjdk11
 before_install:
+  # Download and setup Flutter
   - wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.19.0-stable.tar.xz
   - tar xf flutter_linux_3.19.0-stable.tar.xz
   - export PATH="$PATH:$(pwd)/flutter/bin"
+  - flutter --version
+  - flutter doctor -v
+  
+  # Set Flutter home to avoid local path issues
+  - export FLUTTER_HOME=$(pwd)/flutter
+  - mkdir -p packages/flutter_tools/gradle
+  - ln -s $FLUTTER_HOME/packages/flutter_tools/gradle ./packages/flutter_tools/gradle
+
 install:
-  - flutter build aar
+  - flutter pub get
+  - flutter build aar --no-debug --no-profile
   - mkdir -p library
-  - cp build/host/outputs/repo/*/flutter_*/debug/*.aar library/
-  - cp build/host/outputs/repo/*/flutter_*/release/*.aar library/
+  - cp build/host/outputs/repo/*/*.aar library/
